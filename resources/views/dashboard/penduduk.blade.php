@@ -16,7 +16,7 @@
                 <h5 class="card-title">Data Penduduk Berdasarkan Umur</h5>
                 <p class="card-text text-muted">Statistik penduduk Kota Semarang berdasarkan kelompok umur</p>
                 <a href="{{ route('penduduk.umur') }}" class="btn btn-primary">
-                    <i class="fas fa-chart-pie me-2"></i>Lihat Data
+                    <i class="fas fa-chart-pie me-2"></i>Lihat Dataa
                 </a>
             </div>
         </div>
