@@ -13,22 +13,23 @@ class TenagaKerja extends Model
     
     protected $fillable = [
         'tahun',
-        'kecamatan',
-        'jumlah_angkatan_kerja',
-        'jumlah_bekerja',
-        'jumlah_pengangguran',
-        'tingkat_pengangguran',
-        'tingkat_partisipasi_kerja',
+        'pengangguran_terbuka',
+        'tpak',
+        'tkk',
+        'tpt',
+        'laki_laki',
+        'perempuan',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
         'tahun' => 'integer',
-        'jumlah_angkatan_kerja' => 'integer',
-        'jumlah_bekerja' => 'integer',
-        'jumlah_pengangguran' => 'integer',
-        'tingkat_pengangguran' => 'float',
-        'tingkat_partisipasi_kerja' => 'float',
+        'pengangguran_terbuka' => 'integer',
+        'tpak' => 'integer',
+        'tkk' => 'integer',
+        'tpt' => 'integer',
+        'laki_laki' => 'integer',
+        'perempuan' => 'integer',
     ];
 } 
