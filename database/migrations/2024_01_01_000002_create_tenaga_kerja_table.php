@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('tenaga_kerja', function (Blueprint $table) {
             $table->id();
             $table->integer('tahun');
-            $table->string('kecamatan');
-            $table->integer('jumlah_angkatan_kerja');
-            $table->integer('jumlah_bekerja');
-            $table->integer('jumlah_pengangguran');
-            $table->decimal('tingkat_pengangguran', 5, 2);
-            $table->decimal('tingkat_partisipasi_kerja', 5, 2);
+            $table->string('tpak');
+            $table->string('tkk');
+            $table->string('tpt');
+            $table->integer('laki_laki');
+            $table->integer('perempuan');
+            $table->integer('jumlah');
             $table->timestamps();
         });
     }
