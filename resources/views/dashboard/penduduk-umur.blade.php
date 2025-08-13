@@ -101,6 +101,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No</th>
+                                <th>Tahun</th>
                                 <th>Kelompok Umur</th>
                                 <th>Laki-laki</th>
                                 <th>Perempuan</th>

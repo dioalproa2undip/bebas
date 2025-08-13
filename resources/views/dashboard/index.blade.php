@@ -39,7 +39,7 @@
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="number">{{ number_format($totalKemiskinan) }}</div>
+                    <div class="number"></div>
                     <div class="label">Penduduk Miskin</div>
                 </div>
                 <div class="icon">
@@ -120,7 +120,7 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <a href="{{ route('tenaga-kerja') }}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-briefcase me-2"></i>Data Tenaga Kerja
+                            <i class="fas fa-briefcase me-2"></i>Tenaga Kerja
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
@@ -130,7 +130,7 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <a href="{{ route('gini-rasio') }}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-chart-line me-2"></i>Data Gini Rasio
+                            <i class="fas fa-chart-line me-2"></i>Gini Rasio dan Kemiskinan
                         </a>
                     </div>
                 </div>

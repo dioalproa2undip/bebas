@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tenaga_kerja', function (Blueprint $table) {
+        Schema::create('_tenagakerja', function (Blueprint $table) {
             $table->id();
             $table->integer('tahun');
+            $table->integer('bekerja_laki_laki');
+            $table->integer('bekerja_perempuan');
+            $table->integer('pengangguran_laki_laki')->nullable();
+            $table->integer('pengangguran_perempuan')->nullable();
             $table->string('tpak');
             $table->string('tkk');
             $table->string('tpt');
-            $table->integer('laki_laki');
-            $table->integer('perempuan');
             $table->integer('jumlah');
             $table->timestamps();
         });
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tenaga_kerja');
+        Schema::dropIfExists('_tenagakerja');
     }
-}; 
+};

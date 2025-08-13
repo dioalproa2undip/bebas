@@ -6,6 +6,7 @@
     <title>@yield('title', 'BPS Kota Semarang')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
             --sidebar-width: 250px;
@@ -1924,6 +1925,25 @@
     
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
+         <style>
+        .sidebar {
+            height: 100vh;           
+            overflow-y: auto;        
+            overflow-x: hidden;      
+            background-color: #343a40; 
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    </style>
         <div class="sidebar-header">
             <div class="logo-container">
                 <div class="logo-bps">
@@ -1946,12 +1966,22 @@
                 <a class="nav-link {{ request()->routeIs('tenaga-kerja') ? 'active' : '' }}" href="{{ route('tenaga-kerja') }}">
                     <i class="fas fa-briefcase"></i>Tenaga Kerja
                 </a>
-                <a class="nav-link {{ request()->routeIs('kemiskinan') ? 'active' : '' }}" href="{{ route('kemiskinan') }}">
-                    <i class="fas fa-heart"></i>Kemiskinan
+                <a class="nav-link {{ request()->routeIs('ginimenu') ? 'active' : '' }}" href="{{ route('ginimenu') }}">
+                    <i class="fas fa-heart"></i>IPM,IPG dan IDG
                 </a>
                 <a class="nav-link {{ request()->routeIs('gini-rasio') ? 'active' : '' }}" href="{{ route('gini-rasio') }}">
-                    <i class="fas fa-chart-line"></i>Gini Rasio
+                    <i class="fas fa-chart-line"></i>Gini Rasio dan Kemiskinan
                 </a>
+             <a class="nav-link {{ request()->routeIs('inflasidata') ? 'active' : ''}}" href="{{ route('inflasi.data') }}">
+                    <i class="fas fa-money-bill-wave"></i>Inflasi
+            </a>
+            <a class="nav-link{{ request()->routeIs('produk-domestik-bruto') ? 'active' : '' }}" href="{{ url('pendidikan') }}">
+                    <i class="fas fa-industrial"></i>Pendidikan 
+            </a>
+            <a class="nav-link{{ request()->routeIs('ekonomi')? 'active': '' }}" href="{{ url('ekonomi') }}">
+                    <i class="fas fa-industrial"></i>Ekonomi
+            </a>
+
             </nav>
         </div>
         

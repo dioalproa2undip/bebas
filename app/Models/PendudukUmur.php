@@ -13,6 +13,7 @@ class PendudukUmur extends Model
         'umur',
         'laki_laki',
         'perempuan',
+        'jumlah',
     ];
 
     protected $appends = ['jumlah'];

@@ -5,6 +5,36 @@
 @section('page-subtitle', 'Statistik ketimpangan pendapatan Kota Semarang per kecamatan')
 
 @section('content')
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <form method="GET">
+            <div class="input-group">
+                <label class="input-group-text" for="filter_tahun">Filter Tahun</label>
+                <select class="form-select" id="filter_tahun" name="tahun" onchange="this.form.submit()">
+                    <option value="">Semua Tahun</option>
+                    @for($tahun = 2020; $tahun <= 2024; $tahun++)
+                        <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>{{ $tahun }}</option>
+                    @endfor
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -21,10 +51,11 @@
                             <tr>
                                 <th>No</th>
                                 <th>Tahun</th>
-                                <th>Kecamatan</th>
-                                <th>Nilai Gini Rasio</th>
-                                <th>Kategori Ketimpangan</th>
-                                <th>Pendapatan per Kapita (Rp)</th>
+                                <th>UHH</th>
+                                <th>RLS</th>
+                                <th>HLS</th>
+                                <th>Pengeluaran</th>
+                                <th>Jumlah</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -33,14 +64,11 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $item->tahun }}</td>
-                                <td>{{ $item->kecamatan }}</td>
-                                <td>{{ number_format($item->nilai_gini_rasio, 3) }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $item->nilai_gini_rasio < 0.4 ? 'success' : ($item->nilai_gini_rasio < 0.5 ? 'warning' : 'danger') }}">
-                                        {{ $item->kategori_ketimpangan }}
-                                    </span>
-                                </td>
-                                <td>Rp {{ number_format($item->pendapatan_per_kapita) }}</td>
+                                <td>{{ number_format($item->UHH) }}</td>
+                                <td>{{ number_format($item->RLS) }}%</td>
+                                <td>Rp {{ number_format($item->HLS) }}</td>
+                                <td>{{ number_format($item->Pengeluaran) }}</td>
+                                <td>{{ number_format($item->jumlah) }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-info" title="Edit">
                                         <i class="fas fa-edit"></i>
@@ -52,7 +80,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">Tidak ada data gini rasio</td>
+                                <td colspan="8" class="text-center">Tidak ada data gini rasio</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -63,6 +91,7 @@
     </div>
 </div>
 
+<!-- Grafik -->
 <div class="row mt-4">
     <div class="col-lg-6">
         <div class="card">
@@ -87,6 +116,7 @@
     </div>
 </div>
 
+<!-- Informasi -->
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
@@ -122,67 +152,42 @@
     </div>
 </div>
 
-<!-- Modal Tambah Data -->
+<!-- Modal Tambah Gini Rasio -->
 <div class="modal fade" id="addGiniRasioModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tambah Data Gini Rasio</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Tahun</label>
-                            <input type="number" class="form-control" name="tahun" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Kecamatan</label>
-                            <select class="form-select" name="kecamatan" required>
-                                <option value="">Pilih Kecamatan</option>
-                                <option value="Semarang Tengah">Semarang Tengah</option>
-                                <option value="Semarang Utara">Semarang Utara</option>
-                                <option value="Semarang Timur">Semarang Timur</option>
-                                <option value="Semarang Selatan">Semarang Selatan</option>
-                                <option value="Semarang Barat">Semarang Barat</option>
-                                <option value="Candisari">Candisari</option>
-                                <option value="Gajahmungkur">Gajahmungkur</option>
-                                <option value="Pedurungan">Pedurungan</option>
-                                <option value="Genuk">Genuk</option>
-                                <option value="Gayamsari">Gayamsari</option>
-                                <option value="Mijen">Mijen</option>
-                                <option value="Gunungpati">Gunungpati</option>
-                                <option value="Banyumanik">Banyumanik</option>
-                                <option value="Tembalang">Tembalang</option>
-                                <option value="Ngaliyan">Ngaliyan</option>
-                                <option value="Tugu">Tugu</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Nilai Gini Rasio</label>
-                            <input type="number" step="0.001" class="form-control" name="nilai_gini_rasio" min="0" max="1" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Kategori Ketimpangan</label>
-                            <select class="form-select" name="kategori_ketimpangan" required>
-                                <option value="">Pilih Kategori</option>
-                                <option value="Ketimpangan Rendah">Ketimpangan Rendah</option>
-                                <option value="Ketimpangan Sedang">Ketimpangan Sedang</option>
-                                <option value="Ketimpangan Tinggi">Ketimpangan Tinggi</option>
-                            </select>
-                        </div>
+            <form action="{{ route('ginirasio.mis.tambah') }}" method="POST">
+                @csrf
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Tambah Data Gini Rasio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="mb-3">
+                        <label for="tahun" class="form-label">Tahun</label>
+                        <input type="number" class="form-control" name="tahun" id="tahun" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Pendapatan per Kapita (Rp)</label>
-                        <input type="number" class="form-control" name="pendapatan_per_kapita" required>
+                        <label class="form-label">UHH</label>
+                        <input type="number" class="form-control" name="UHH" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">RLS</label>
+                        <input type="number" step="0.01" class="form-control" name="RLS" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">HLS</label>
+                        <input type="number" class="form-control" name="HLS" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pengeluaran</label>
+                        <input type="number" step="0.001" class="form-control" name="Pengeluaran" required>
+                    </div>
+                    
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer bg-white">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan Data</button>
                 </div>
             </form>
         </div>
@@ -193,43 +198,28 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Sample data untuk grafik gini rasio per kecamatan
+// Chart 1: Gini Rasio per Kecamatan
 const giniRasioCtx = document.getElementById('giniRasioChart').getContext('2d');
-const giniRasioChart = new Chart(giniRasioCtx, {
+new Chart(giniRasioCtx, {
     type: 'bar',
     data: {
-        labels: ['Semarang Tengah', 'Semarang Utara', 'Semarang Timur', 'Semarang Selatan', 'Semarang Barat'],
+        labels: ['Kec. A', 'Kec. B', 'Kec. C', 'Kec. D', 'Kec. E'],
         datasets: [{
             label: 'Gini Rasio',
             data: [0.385, 0.412, 0.398, 0.425, 0.401],
-            backgroundColor: [
-                '#667eea',
-                '#764ba2',
-                '#f093fb',
-                '#f5576c',
-                '#4facfe'
-            ]
+            backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe']
         }]
     },
     options: {
         responsive: true,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 1
-            }
-        }
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, max: 1 } }
     }
 });
 
-// Sample data untuk grafik trend gini rasio
+// Chart 2: Trend Gini Rasio
 const trendGiniCtx = document.getElementById('trendGiniChart').getContext('2d');
-const trendGiniChart = new Chart(trendGiniCtx, {
+new Chart(trendGiniCtx, {
     type: 'line',
     data: {
         labels: ['2019', '2020', '2021', '2022', '2023'],
@@ -243,18 +233,9 @@ const trendGiniChart = new Chart(trendGiniCtx, {
     },
     options: {
         responsive: true,
-        plugins: {
-            legend: {
-                position: 'top'
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 1
-            }
-        }
+        plugins: { legend: { position: 'top' } },
+        scales: { y: { beginAtZero: true, max: 1 } }
     }
 });
 </script>
-@endpush 
+@endpush

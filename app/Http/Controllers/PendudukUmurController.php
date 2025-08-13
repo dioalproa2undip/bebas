@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PendudukUmur;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+// use Maatwebsite\Excel\Concerns\ToModel;
 use App\Imports\PendudukUmurImport;
 
 
@@ -38,12 +39,12 @@ class PendudukUmurController extends Controller
 {
     $request->validate([
         'file' => 'required|mimes:xlsx,xls',
-        'tahun' => 'required|integer',
+        // 'tahun' => 'required|integer',
     ]);
 
     try {
-        Excel::import(new PendudukUmurImport($request->tahun), $request->file('file'));
-
+        // Excel::import(new PendudukUmurImport($request->tahun), $request->file('file'));
+        Excel::import(new PendudukUmur, request()->file('file'));
         return redirect()->route('dashboard.penduduk-umur')->with('success', 'Data berhasil diimpor.');
     } catch (\Exception $e) {
         return back()->withErrors(['import_error' => $e->getMessage()]);

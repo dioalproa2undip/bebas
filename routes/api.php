@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\TenagaKerjaController;
 use App\Http\Controllers\Api\PendudukUmurApiController;
 use App\Http\Controllers\Api\PendudukApiController;
 use App\Http\Controllers\Api\PendudukJatengApiController;
+use App\Http\Controllers\Api\TenagaUmurLimaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,4 +40,11 @@ Route::prefix('penduduk-jateng')->group(function () {
     Route::get('/', [PendudukJatengApiController::class, 'index']);
     Route::post('/', [PendudukJatengApiController::class, 'store']);
     Route::delete('/{id}', [PendudukJatengApiController::class, 'destroy']);
+});
+
+Route::prefix('umur-tenaga')->group(function(){
+Route::get('/tenaga-kerja', [TenagaUmurLimaController::class, 'index']);
+Route::post('/tenaga-kerja-umur', [TenagaUmurLimaController::class, 'store']);
+Route::delete('/{id}', [TenagaUmurLimaController::class, 'destroy']);
+
 });
