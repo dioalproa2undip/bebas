@@ -29,6 +29,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\InflasiPemeliharaRT;
 use App\Models\Inflasi;
 
+
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\FuncCall;
 
@@ -547,36 +548,79 @@ public function hapusDataSejateng($id)
     return view('dashboard.gini-rasio', compact('data'));
 }
 
-public function tambahGiniRasio(Request $request)
-{
-    $request->validate([
-        'tahun' => 'required|integer',
-        'penduduk_miskin' => 'required|integer|min:0',
-        'penduduk_miskin_persen' => 'required|numeric|min:0',
-        'garis_kemiskinan' => 'required|integer|min:0',
-        'gini_rasio' => 'required|numeric|min:0',
-        // Hapus validasi 'jumlah' karena tidak diinput oleh user
-    ]);
-
-    try {
-        // Hitung jumlah sesuai kebutuhanmu, misalnya di sini asumsi "jumlah penduduk = input + logika tertentu"
-        $jumlah = $request->penduduk_miskin + $request->garis_kemiskinan + $request->gini_rasio;// 👉 Ganti sesuai kebutuhan logika atau tambahkan input form
-
-        GiniRasMis::create([
-            'tahun' => $request->tahun,
-            'penduduk_miskin' => $request->penduduk_miskin,
-            'penduduk_miskin_persen' => $request->penduduk_miskin_persen,
-            'garis_kemiskinan' => $request->garis_kemiskinan,
-            'gini_rasio' => $request->gini_rasio,
-            'jumlah' => $jumlah
+  // ➤ Tambah manual
+    public function tambahGiniRasio(Request $request)
+    {
+        $request->validate([
+            'tahun' => 'required|integer',
+            'penduduk_miskin' => 'required|integer|min:0',
+            'penduduk_miskin_persen' => 'required|numeric|min:0',
+            'garis_kemiskinan' => 'required|integer|min:0',
+            'gini_rasio' => 'required|numeric|min:0',
         ]);
 
-        return redirect()->route('gini-rasio')->with('success', 'Data Gini Rasio berhasil ditambahkan!');
-    } catch (\Exception $e) {
-        // Jika error terjadi, tampilkan ke user
-        return redirect()->back()->with('error', 'Gagal menambahkan data Gini Rasio: ' . $e->getMessage());
+        try {
+            $jumlah = $request->penduduk_miskin + $request->garis_kemiskinan + $request->gini_rasio;
+
+            GiniRasMis::create([
+                'tahun' => $request->tahun,
+                'penduduk_miskin' => $request->penduduk_miskin,
+                'penduduk_miskin_persen' => $request->penduduk_miskin_persen,
+                'garis_kemiskinan' => $request->garis_kemiskinan,
+                'gini_rasio' => $request->gini_rasio,
+                'jumlah' => $jumlah
+            ]);
+
+            return redirect()->route('gini-rasio')->with('success', 'Data berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal tambah data: ' . $e->getMessage());
+        }
     }
-}
+
+    // ➤ Import Excel/CSV
+    public function importGiniRasio(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls'
+        ]);
+
+        try {
+            // Ambil semua data di sheet pertama
+            $data = Excel::toArray([], $request->file('file'))[0];
+
+            foreach ($data as $index => $row) {
+                // Skip baris header (baris pertama)
+                if ($index === 0) {
+                    continue;
+                }
+
+                // Pastikan kolom ada (pakai index angka, bukan nama header)
+                if (isset($row[0])) {
+                    $tahun = $row[0] ?? null;
+                    $pendudukMiskin = $row[1] ?? 0;
+                    $pendudukMiskinPersen = $row[2] ?? 0;
+                    $garisKemiskinan = $row[3] ?? 0;
+                    $giniRasio = $row[4] ?? 0;
+
+                    $jumlah = $pendudukMiskin + $garisKemiskinan + $giniRasio;
+
+                    GiniRasMis::create([
+                        'tahun' => $tahun,
+                        'penduduk_miskin' => $pendudukMiskin,
+                        'penduduk_miskin_persen' => $pendudukMiskinPersen,
+                        'garis_kemiskinan' => $garisKemiskinan,
+                        'gini_rasio' => $giniRasio,
+                        'jumlah' => $jumlah
+                    ]);
+                }
+            }
+
+            return redirect()->route('gini-rasio')->with('success', 'Data berhasil diimport!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal import: ' . $e->getMessage());
+        }
+    }
+
 
 
  public function tenagakerjadua(Request $request)
