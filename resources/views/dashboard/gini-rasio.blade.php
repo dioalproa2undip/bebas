@@ -40,9 +40,14 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Data Kemiskinan dan Gini Rasio Kota Semarang</h5>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addGiniRasioModal">
-                    <i class="fas fa-plus me-2"></i>Tambah Data
-                </button>
+                <div>
+                    <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#importGiniRasioModal">
+                        <i class="fas fa-file-import me-2"></i>Import Excel/CSV
+                    </button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addGiniRasioModal">
+                        <i class="fas fa-plus me-2"></i>Tambah Data
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -52,7 +57,7 @@
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Jumlah Penduduk Miskin</th>
-                                <th>Penduduk Miskin</th>
+                                <th>Penduduk Miskin (%)</th>
                                 <th>Garis Kemiskinan</th>
                                 <th>Gini Rasio</th>
                                 <th>Jumlah</th>
@@ -65,19 +70,21 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $item->tahun }}</td>
                                 <td>{{ number_format($item->penduduk_miskin) }}</td>
-                                <td>{{ number_format($item->penduduk_miskin_persen) }}%</td>
+                                <td>{{ number_format($item->penduduk_miskin_persen, 2) }}%</td>
                                 <td>Rp {{ number_format($item->garis_kemiskinan) }}</td>
-                                <td>{{ number_format($item->gini_rasio) }}</td>
+                                <td>{{ number_format($item->gini_rasio, 3) }}</td>
                                 <td>{{ number_format($item->jumlah) }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-info" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger" title="Hapus">
-                                        <a href="{{ route('ginirasio.hapus', $item->id) }}" class="text-white">
+                                    <form action="{{ route('ginirasio.hapus', $item->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data ini?')" title="Hapus">
                                             <i class="fas fa-trash"></i>
-                                        </a>
-                                    </button>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             @empty
@@ -92,11 +99,6 @@
         </div>
     </div>
 </div>
-
-<!-- Grafik -->
-
-<!-- Informasi -->
-
 
 <!-- Modal Tambah Gini Rasio -->
 <div class="modal fade" id="addGiniRasioModal" tabindex="-1">
@@ -129,7 +131,6 @@
                         <label class="form-label">Gini Rasio</label>
                         <input type="number" step="0.001" class="form-control" name="gini_rasio" required>
                     </div>
-                    
                 </div>
                 <div class="modal-footer bg-white">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -139,5 +140,30 @@
         </div>
     </div>
 </div>
-@endsection
 
+<!-- Modal Import Excel/CSV -->
+<div class="modal fade" id="importGiniRasioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('gini-rasio.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Import Data Gini Rasio dari Excel/CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="mb-3">
+                        <label class="form-label">Pilih File Excel/CSV</label>
+                        <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
+                        <div class="form-text">Format kolom: tahun, penduduk_miskin, penduduk_miskin_persen, garis_kemiskinan, gini_rasio</div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-success">Import Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
