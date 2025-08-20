@@ -8,6 +8,7 @@ use App\Models\Penduduk;
 use App\Models\TenagaKerjaDua;
 use App\Models\_TenagaKerja;
 use App\Models\IPG;
+use App\Models\NakerJateng;
 use App\Models\GiniRasMis;
 use App\Models\IpM;
 use App\Models\EkonomiSE;
@@ -50,6 +51,7 @@ class DashboardController extends Controller
         $totalTrans = Trans::sum('jumlah');
         $totalInformasi = Informasi::sum('jumlah');
         $totalRekreasi = Rekreasi::sum('jumlah');
+        $totalIdg = NakerJateng::sum('nilai');
         $totalInflasi = Inflasi::sum('inflasi_komulatif');
         $totalPendidikan = Pendidikan::sum('jumlah');
         $totalPendidikanDua = PendidikanDua::sum('apk');
@@ -558,7 +560,7 @@ public function tambahGiniRasio(Request $request)
 
     try {
         // Hitung jumlah sesuai kebutuhanmu, misalnya di sini asumsi "jumlah penduduk = input + logika tertentu"
-        $jumlah = $request->penduduk_miskin + 10000; // 👉 Ganti sesuai kebutuhan logika atau tambahkan input form
+        $jumlah = $request->penduduk_miskin + $request->garis_kemiskinan + $request->gini_rasio;// 👉 Ganti sesuai kebutuhan logika atau tambahkan input form
 
         GiniRasMis::create([
             'tahun' => $request->tahun,
@@ -589,49 +591,56 @@ public function tambahGiniRasio(Request $request)
         return view('dashboard.tenagakerja-dua', compact('data'));
     }
     
-    public function tambahTenagaKerjaDua(Request $request)
-    {
-        $request->validate([
-            'tahun' => 'required|integer',
-            'bekerja_pria' => 'required|integer|min:0',
-            'bekerja_wanita' => 'required|integer|min:0',
-            'pengangguran_pria' => 'required|integer|min:0',
-            'pengangguran_wanita' => 'required|integer|min:0',
-            'sekolah_pria' => 'required|integer|min:0',
-            'sekolah_wanita' => 'required|integer|min:0',
-            'rt_pria' => 'required|integer|min:0',
-            'rt_wanita' => 'required|integer|min:0',
-            'lainnya_pria' => 'required|integer|min:0',
-            'lainnya_wanita' => 'required|integer|min:0'
+public function tambahTenagaKerjaDua(request $request)
+{   
+    $request->validate([
+        'tahun' => 'required|integer',
+        'bekerja_pria' => 'required|integer|min:0',
+        'bekerja_wanita' => 'required|integer|min:0',
+        'pengangguran_pria' => 'required|integer|min:0',
+        'pengangguran_wanita' => 'required|integer|min:0',
+        'sekolah_pria' => 'required|integer|min:0',
+        'sekolah_wanita' => 'required|integer|min:0',
+        'rt_pria' => 'required|integer|min:0',
+        'rt_wanita' => 'required|integer|min:0',
+        'lainnya_pria' => 'required|integer|min:0',
+        'lainnya_wanita' => 'required|integer|min:0',
+    ]);
+    try {
+        // Hitung total jumlah angkatan kerja (bekerja + pengangguran + sekolah + rt + lainnya)
+        $jumlah = 
+            $request->bekerja_pria + 
+            $request->bekerja_wanita + 
+            $request->pengangguran_pria + 
+            $request->pengangguran_wanita +
+            $request->sekolah_pria +
+            $request->sekolah_wanita +
+            $request->rt_pria +
+            $request->rt_wanita +
+            $request->lainnya_pria +
+            $request->lainnya_wanita;
+
+        // Simpan ke database
+        TenagaKerjaDua::create([
+            'tahun' => $request->tahun,
+            'bekerja_pria' => $request->bekerja_pria,
+            'bekerja_wanita' => $request->bekerja_wanita,
+            'pengangguran_pria' => $request->pengangguran_pria,
+            'pengangguran_wanita' => $request->pengangguran_wanita,
+            'sekolah_pria' => $request->sekolah_pria,
+            'sekolah_wanita' => $request->sekolah_wanita,
+            'rt_pria' => $request->rt_pria,
+            'rt_wanita' => $request->rt_wanita,
+            'lainnya_pria' => $request->lainnya_pria,
+            'lainnya_wanita' => $request->lainnya_wanita,
+            'jumlah' => $jumlah
         ]);
 
-        try {
-            $jumlah = $request->bekerja_pria + $request->bekerja_wanita +
-                      $request->pengangguran_pria + $request->pengangguran_wanita +
-                      $request->sekolah_pria + $request->sekolah_wanita +
-                      $request->rt_pria + $request->rt_wanita +
-                      $request->lainnya_pria + $request->lainnya_wanita;
-
-            TenagaKerjaDua::create([
-                'tahun' => $request->tahun,
-                'bekerja_pria' => $request->bekerja_pria,
-                'bekerja_wanita' => $request->bekerja_wanita,
-                'pengangguran_pria' => $request->pengangguran_pria,
-                'pengangguran_wanita' => $request->pengangguran_wanita,
-                'sekolah_pria' => $request->sekolah_pria,
-                'sekolah_wanita' => $request->sekolah_wanita,
-                'rt_pria' => $request->rt_pria,
-                'rt_wanita' => $request->rt_wanita,
-                'lainnya_pria' => $request->lainnya_pria,
-                'lainnya_wanita' => $request->lainnya_wanita,
-                'jumlah' => $jumlah
-            ]);
-            return redirect()->route('tenagakerja-dua')->with('success', 'Data tenaga kerja dua berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan data tenaga kerja dua: ' . $e->getMessage());
-        }
-
-    }   
+        return redirect()->route('tenaga-kerja-dua')->with('success', 'Data tenaga kerja berhasil ditambahkan!');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Gagal menambahkan data tenaga kerja: ' . $e->getMessage());
+    }
+}
 
     public function ipm(Request $request)
     {
@@ -1388,6 +1397,38 @@ public function nambahEkonomi(Request $request)
     }
 
     return redirect()->back()->with('success', 'Data ekonomi berhasil ditambahkan!');
+}
+public function hapusDataGinRas($id)
+    {
+        try {
+            // Hapus data dari database
+            $ginras = GiniRasMis::findOrFail($id);
+            $ginras->delete();
+            
+            return redirect()->back()->with('success', 'Data berhasil dihapus!');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
+    }
+
+public function IDG(Request $request )
+{
+    $IDG =[
+        'Keterlibatan Perempuan Dalam Parlemen',
+        'Perempuan Sebagai Tenaga Profesional',
+        'Sumbangan Pendapatan Perempuan',
+    ];
+    $tahun = $request->input('tahun', null);
+    // query data pendidikan yang sudah tersimpan
+    $query = NakerJateng::orderBy('tahun', 'desc');
+    if (!is_null($tahun) && $tahun !== '') {
+        $query->where('tahun', $tahun);
+    }
+    $IDGSatu = $query->get();
+    // kirim keduanya ke view
+    return view('dashboard.nakerjateng', compact('IDG', 'IDGSatu', 'tahun'));
+
 }
 
 

@@ -35,7 +35,7 @@
                 <div class="card-body text-center">
                     <h5 class="card-title fw-bold">IDG</h5>
                     <p class="card-text">Indeks Pemberdayaan Gender Kota Semarang</p>
-                   <a href="javascript:void(0)" class="btn btn-success"></a>
+                   <a href="{{ route('nakerjateng') }}" class="btn btn-success"></a>
                         <i class="bi bi-graph-up"></i> Lihat Data   
                     </a>
                 </div>

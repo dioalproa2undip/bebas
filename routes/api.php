@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\TenagaKerjaController;
 use App\Http\Controllers\Api\PendudukUmurApiController;
 use App\Http\Controllers\Api\PendudukApiController;
 use App\Http\Controllers\Api\PendudukJatengApiController;
+use App\Http\Controllers\Api\TenagaKelaminController;
 use App\Http\Controllers\Api\TenagaUmurLimaController;
 /*
 |--------------------------------------------------------------------------
@@ -47,4 +48,9 @@ Route::get('/tenaga-kerja', [TenagaUmurLimaController::class, 'index']);
 Route::post('/tenaga-kerja-umur', [TenagaUmurLimaController::class, 'store']);
 Route::delete('/{id}', [TenagaUmurLimaController::class, 'destroy']);
 
+});
+Route::prefix('tenaga-kelamin')->group(function () {
+    Route::get('/', [TenagaKelaminController::class, 'index']);
+    Route::post('/', [TenagaKelaminController::class, 'store']);
+    Route::delete('/{id}', [TenagaKelaminController::class, 'destroy']);
 });
